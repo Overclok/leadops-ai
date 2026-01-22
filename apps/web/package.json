@@ -13,7 +13,7 @@
     "test": "node --test"
   },
   "dependencies": {
-    "@clerk/nextjs": "6.0.0",
+    "@clerk/nextjs": "^6.36.9",
     "@supabase/supabase-js": "2.90.1",
     "next": "16.1.4",
     "react": "18.2.0",

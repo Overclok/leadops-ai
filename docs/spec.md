@@ -33,3 +33,40 @@ Provider → n8n (adapter) → `/api/events` (Next) → Supabase (event store) �
 3) Web: `cd apps/web && npm install && npm run dev`
 4) n8n: `cd infra/n8n && docker compose up -d`
 5) Import workflow JSON in n8n e set env: `AG_API_BASE`, `AG_TENANT_ID`, `AG_WEBHOOK_SECRET`.
+
+## Integration Notes
+
+### Clerk Auth & Tenant Model (Agent A3)
+**Implementation Status**: ✅ Integrated (2026-01-22)
+
+**Model**: Strict 1-user-per-tenant architecture.
+- Each Clerk user (`userId`) maps to exactly **one** tenant in Supabase.
+- Tenant auto-creation on first login via `getOrCreateTenant()`.
+- No Clerk Organizations used (enforcing single-user ownership).
+
+**Middleware**:
+- File: `apps/web/src/proxy.ts` (Next.js 16 renamed middleware → proxy)
+- Protected routes: `/dashboard`, `/api/tenant`, `/api/metrics`, `/api/internal`
+- Public routes: `/api/events` (webhook ingestion, validated via HMAC)
+- Uses `clerkMiddleware` with `createRouteMatcher` for deterministic route protection.
+
+**Tenant Resolution**:
+- File: `apps/web/src/lib/tenant.ts`
+- Function: `getOrCreateTenant()` → Returns `{ id, owner_clerk_user_id, name, webhook_secret, created_at }`
+- Function: `getTenantId()` → Returns `string` (tenant UUID)
+- Function: `assertTenantOwnership(resourceTenantId)` → Throws if cross-tenant access detected
+
+**Cross-Tenant Prevention**:
+- Runtime assertions via `assertTenantOwnership(resourceTenantId)`.
+- All queries must filter by `tenant_id` from current auth context.
+- RLS policies in Supabase deny direct access (use service role with tenant_id filtering).
+
+**Environment Variables** (Clerk):
+```bash
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+CLERK_SECRET_KEY=sk_test_...
+```
+
+**Tests**:
+- Location: `apps/web/src/lib/__tests__/tenant.test.ts`
+- Conceptual unit tests for tenant creation and cross-tenant protection logic.

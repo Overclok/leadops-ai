@@ -7,4 +7,5 @@ Gli errori sono eventi `ERROR_RECORDED` con:
 - retryable (bool)
 
 **Querying Errors:**
-Errors can be queried efficiently using the `errors_view` SQL view, which filters for `ERROR_RECORDED` types and extracts JSON payloads.
+- **Analytic Errors**: Use the `errors_view` SQL view for errors stored in the event stream.
+- **System Logs**: Use the `error_logs` table for database or structural system errors.
