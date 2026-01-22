@@ -11,6 +11,19 @@ Per un determinismo completo va generato e committato un lockfile.
 2. **After lock exists**: ALWAYS use `npm ci`.
 3. **WARNING**: Do not use `npm install` once lock is committed unless intentionally changing deps.
 
+## Clerk Setup
+1. **Create Clerk Application**:
+   - Go to [Clerk Dashboard](https://dashboard.clerk.com/).
+   - Create application.
+
+2. **Configure Environment**:
+   - Add to `apps/web/.env.local` (do NOT commit):
+     ```bash
+     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+     CLERK_SECRET_KEY=sk_test_...
+     ```
+
+
 ## Supabase Setup (Manual & Deterministic)
 Since we are using existing infrastructure or manual provisioning for now (no local Docker Supabase yet):
 

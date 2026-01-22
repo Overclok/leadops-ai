@@ -22,7 +22,8 @@ Legenda: ✅ done | 🟡 pending | ❓ unknown | ⛔ blocked
 - ✅ **G4 Web app boots (dev & build)**
   - Evidenze: `npm install` ✅, `npm run build` ✅
 - 🟡 **G5 Auth works (Clerk)**
-  - Evidenze: redirect/login + tenant mapping
+  - Evidenze: Middleware configured, README updated.
+  - Pending: Manual login verification (redirect behavior).
 
 ---
 
@@ -130,4 +131,11 @@ Legenda: ✅ done | 🟡 pending | ❓ unknown | ⛔ blocked
 - **Auditor**: Antigravity
 - **Risultato**: G2 Done, G3 Done
 - **Note**: User provided keys. Healthcheck passed. Supabase connection & schema confirmed.
+- **Next Prompt**: N04a
+
+### Run #13 (P04 Execution)
+- **Data**: 2026-01-22 21:20 CET
+- **Auditor**: Antigravity
+- **Risultato**: G5 Pending (Middleware Configured)
+- **Note**: Updated middleware.ts for Clerk v6 protection. Updated README. Manual verification needed for login redirect.
 - **Next Prompt**: N04a

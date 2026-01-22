@@ -97,8 +97,11 @@
       "id": "G5",
       "name": "Auth works (Clerk) with 1 user per tenant",
       "status": "pending",
-      "evidence": [],
-      "blocking_reason": "Clerk not configured or protected routes not enforced",
+      "evidence": [
+        "Middleware configured to protect /dashboard",
+        "README updated with Clerk setup instructions"
+      ],
+      "blocking_reason": "Waiting for manual verification of login redirect",
       "definition_of_done": [
         "/dashboard requires auth when logged out",
         "After login, tenant context resolves deterministically",
@@ -168,7 +171,7 @@
       "status": "done",
       "evidence": [
         "API reachable (200 OK)",
-        "JSON response verified"
+        "JSON verified"
       ],
       "blocking_reason": null,
       "definition_of_done": [
@@ -294,11 +297,20 @@
         "Verified Supabase connection and schema"
       ],
       "recommendation": "N04a"
+    },
+    {
+      "date": "2026-01-22T21:20:00+01:00",
+      "action": "P04 Executed",
+      "changes": [
+        "Updated middleware.ts to protect /dashboard",
+        "Updated apps/web/README.md with Clerk setup"
+      ],
+      "recommendation": "Verify G5"
     }
   ],
   "next_step": {
     "recommended_prompt_id": "N04a",
-    "reason": "Supabase verified. Web build fixed. Proceed to N04a (n8n Sync).",
+    "reason": "Clerk middleware configured. Waiting for user verification. Proceeding to N04a (n8n Sync) in parallel ok.",
     "blocked_by": []
   }
 }
