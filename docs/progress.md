@@ -154,5 +154,17 @@ Legenda: ✅ done | 🟡 pending | ❓ unknown | ⛔ blocked
 - **Note**: 
   - Verified Clerk keys in `.env.local` using `healthcheck.mjs`. Keys are PRESENT.
   - Added try/catch and logging to `middleware.ts`.
-  - Next step: User to run `npm run dev` and check terminal for "Clerk Auth Error".
+  - **Update**: Enhanced logging to check key presence at runtime and log stack traces.
+  - Next step: User to run `npm run dev` and check terminal for "[Middleware]" logs.
+- **Next Prompt**: Debug G5
+
+### Run #16 (A0 Spec Freeze)
+- **Data**: 2026-01-22 22:15 CET
+- **Auditor**: Antigravity
+- **Risultato**: Spec Frozen
+- **Note**:
+  - Updated `docs/spec.md` (Scope, Assumptions, Non-Goals).
+  - Frozen `docs/event-contracts.md` (Schema, Ingestion, Derived Events).
+  - Frozen `docs/dashboard-contract.md` (JSON-backed).
+  - **Decision**: All downstream agents (A2, A3, A4, A10) are GO.
 - **Next Prompt**: Debug G5

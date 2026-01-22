@@ -318,6 +318,16 @@
         "Failed G5: /dashboard returns 500 Error"
       ],
       "recommendation": "Debug G5"
+    },
+    {
+      "date": "2026-01-22T22:15:00+01:00",
+      "action": "A0 Spec Freeze Executed",
+      "changes": [
+        "Updated docs/spec.md (Scope, Assumptions, Non-Goals)",
+        "Frozen docs/event-contracts.md",
+        "Frozen docs/dashboard-contract.md"
+      ],
+      "recommendation": "Debug G5"
     }
   ],
   "next_step": {
