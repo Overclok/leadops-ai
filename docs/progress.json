@@ -157,6 +157,54 @@
       "owner_agent": "A8"
     }
   ],
+  "remote_gates": [
+    {
+      "id": "RN0",
+      "name": "API enabled",
+      "status": "unknown",
+      "evidence": [],
+      "blocking_reason": null,
+      "definition_of_done": [
+        "Settings -> n8n API enabled",
+        "API Key created"
+      ],
+      "owner_agent": "N8N_AUDITOR"
+    },
+    {
+      "id": "RN1",
+      "name": "MCP enabled",
+      "status": "unknown",
+      "evidence": [],
+      "blocking_reason": null,
+      "definition_of_done": [
+        "Settings -> Instance-level MCP enabled"
+      ],
+      "owner_agent": "N8N_AUDITOR"
+    },
+    {
+      "id": "RN2",
+      "name": "Service account created",
+      "status": "unknown",
+      "evidence": [],
+      "blocking_reason": null,
+      "definition_of_done": [
+        "Service account for auditing created"
+      ],
+      "owner_agent": "N8N_AUDITOR"
+    },
+    {
+      "id": "RN3",
+      "name": "API key stored",
+      "status": "unknown",
+      "evidence": [],
+      "blocking_reason": null,
+      "definition_of_done": [
+        "API Key stored in secret manager",
+        "Not in git"
+      ],
+      "owner_agent": "N8N_AUDITOR"
+    }
+  ],
   "runs": [
     {
       "date": "2026-01-22T17:52:54+01:00",
@@ -177,13 +225,23 @@
         "Run npm run build (failed)"
       ],
       "recommendation": "P03"
+    },
+    {
+      "date": "2026-01-22T18:43:00+01:00",
+      "action": "Remote N8N Readiness Gates Added",
+      "changes": [
+        "Added remote_gates RN0-RN3",
+        "Updated progress.md and infra/n8n/README.md"
+      ],
+      "recommendation": "N01"
     }
   ],
   "next_step": {
-    "recommended_prompt_id": "P03",
-    "reason": "Build failed due to missing path aliases in tsconfig. Need to fix configuration.",
+    "recommended_prompt_id": "N01",
+    "reason": "Remote audit required for n8n API/MCP readiness.",
     "blocked_by": [
-      "G4"
+      "RN0",
+      "RN1"
     ]
   }
 }

@@ -15,3 +15,8 @@ Poi:
 
 Nota: la firma HMAC (`x-ag-signature`) va calcolata in n8n con un Function node prima dell’HTTP Request.
 In questo pack il workflow include già il nodo **SignRequest** (HMAC deterministica) e popola automaticamente `x-ag-ts` e `x-ag-signature`.
+
+## Remote Config Checklist
+- [ ] Settings -> n8n API (enabled?)
+- [ ] Settings -> Instance-level MCP (enabled?)
+- [ ] Version + edition (screenshot/log evidence)

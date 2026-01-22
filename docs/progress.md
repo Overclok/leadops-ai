@@ -34,9 +34,21 @@ Legenda: ✅ done | 🟡 pending | ❓ unknown | ⛔ blocked
 
 ---
 
+## Remote n8n Readiness
+- ❓ **RN0 API enabled**
+  - Evidenze: Check pending.
+- ❓ **RN1 MCP enabled (optional)**
+  - Evidenze: Check pending.
+- ❓ **RN2 Service account created (recommended)**
+  - Evidenze: Check pending.
+- ❓ **RN3 API key stored in secret manager (not in repo)**
+  - Evidenze: Check pending.
+
+---
+
 ## Prossimo step (1 solo)
-**P03 — Fix Build & Configuration**
-(Fix tsconfig paths, verify build succeeds)
+**N01 — Remote n8n Audit**
+(Confirm edition/version, enable API/MCP, verify gates RN0-RN3)
 
 ---
 
@@ -76,3 +88,9 @@ Legenda: ✅ done | 🟡 pending | ❓ unknown | ⛔ blocked
 - **Note**: `npm install` generated package-lock.json. `npm run build` failed due to missing `@/*` paths in `tsconfig.json`.
 - **Next Prompt**: P03
 
+### Run #6 (Remote Audit Prep)
+- **Data**: 2026-01-22 18:43 CET
+- **Auditor**: Antigravity
+- **Risultato**: Added Remote n8n Readiness Gates RN0-RN3
+- **Note**: Defined remote readiness gates in progress ledger.
+- **Next Prompt**: N01
