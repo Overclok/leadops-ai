@@ -19,18 +19,10 @@ Legenda: ✅ done | 🟡 pending | ❓ unknown | ⛔ blocked
   - Evidenze: .env.local found, keys detected.
 - 🟡 **G3 Supabase schema applied & tenant isolation**
   - Evidenze: migrazione esistente (filesystem), stato db ignoto
-- ⛔ **G4 Web app boots (dev & build)**
-  - Evidenze: `npm install` ✅, `npm run build` ❌ Module not found (@/lib/...)
+- ✅ **G4 Web app boots (dev & build)**
+  - Evidenze: `npm install` ✅, `npm run build` ✅
 - 🟡 **G5 Auth works (Clerk)**
   - Evidenze: redirect/login + tenant mapping
-- 🟡 **G6 n8n self-hosted runs + workflows imported**
-  - Evidenze: docker compose up + workflow import
-- 🟡 **G7 End-to-end ingestion**
-  - Evidenze: POST evento -> DB persist -> dedupe OK
-- 🟡 **G8 Metrics deterministic**
-  - Evidenze: output stabile su 2 run
-- 🟡 **G9 Dashboard renders KPI + drilldowns**
-  - Evidenze: KPI + timeline + campagne + prodotti caldi + stati UI
 
 ---
 
@@ -50,7 +42,7 @@ Legenda: ✅ done | 🟡 pending | ❓ unknown | ⛔ blocked
 ---
 
 ## Prossimo step (1 solo)
-**N04 — Execute n8n Sync**
+**N04a — Execute n8n Sync**
 (Run DRY_RUN then APPLY, verify imported workflows)
 
 ---
@@ -118,3 +110,10 @@ Legenda: ✅ done | 🟡 pending | ❓ unknown | ⛔ blocked
 - **Risultato**: RN4 Done
 - **Note**: Created `n8n-sync.mjs` for idempotent workflow provisioning.
 - **Next Prompt**: N04
+
+### Run #10 (P10 Execution)
+- **Data**: 2026-01-22 19:48 CET
+- **Auditor**: Antigravity
+- **Risultato**: G4 Done
+- **Note**: Fixed build errors (tsconfig paths, await auth()). Enforced secret hygiene (.gitignore updated, infra/n8n/.env.local untracked).
+- **Next Prompt**: N04a

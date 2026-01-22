@@ -77,12 +77,12 @@
     {
       "id": "G4",
       "name": "Web app boots (dev and build)",
-      "status": "blocked",
+      "status": "done",
       "evidence": [
         "npm install succeeded",
-        "npm run build failed"
+        "npm run build succeeded (tsconfig paths fixed, await auth() fix)"
       ],
-      "blocking_reason": "Build failed: Module not found (missing tsconfig paths for @/*)",
+      "blocking_reason": null,
       "definition_of_done": [
         "apps/web: npm run dev starts",
         "apps/web: npm run build succeeds"
@@ -260,11 +260,22 @@
         "Updated infra/n8n/README.md"
       ],
       "recommendation": "N04"
+    },
+    {
+      "date": "2026-01-22T19:48:00+01:00",
+      "action": "P10 Executed",
+      "changes": [
+        "Fixed tsconfig.json paths",
+        "Fixed apps/web/src/lib/tenant.ts await",
+        "Enforced secret hygiene in .gitignore",
+        "Verified infra/n8n/.env.local untracked"
+      ],
+      "recommendation": "N04a"
     }
   ],
   "next_step": {
-    "recommended_prompt_id": "N04",
-    "reason": "Sync tool ready. Next is executing DRY_RUN and APPLY.",
+    "recommended_prompt_id": "N04a",
+    "reason": "Web build fixed. Sync tool ready. Proceed to DRY_RUN.",
     "blocked_by": []
   }
 }

@@ -2,7 +2,7 @@ import { auth } from "@clerk/nextjs/server";
 import { supabaseServer } from "./supabase";
 
 export async function getOrCreateTenant() {
-  const { userId } = auth();
+  const { userId } = await auth();
   if (!userId) throw new Error("Unauthenticated");
 
   const supabase = supabaseServer();
