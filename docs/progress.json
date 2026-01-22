@@ -84,7 +84,8 @@
       "status": "done",
       "evidence": [
         "npm install succeeded",
-        "npm run build succeeded (tsconfig paths fixed, await auth() fix)"
+        "npm run build succeeded (tsconfig paths fixed, await auth() fix)",
+        "npm run dev verified (booted on port 3001)"
       ],
       "blocking_reason": null,
       "definition_of_done": [
@@ -96,12 +97,13 @@
     {
       "id": "G5",
       "name": "Auth works (Clerk) with 1 user per tenant",
-      "status": "pending",
+      "status": "blocked",
       "evidence": [
         "Middleware configured to protect /dashboard",
-        "README updated with Clerk setup instructions"
+        "README updated with Clerk setup instructions",
+        "Sign in button redirects to Clerk (Public key Verified)"
       ],
-      "blocking_reason": "Waiting for manual verification of login redirect",
+      "blocking_reason": "500 Internal Server Error on /dashboard (Middleware or Secret Key issue)",
       "definition_of_done": [
         "/dashboard requires auth when logged out",
         "After login, tenant context resolves deterministically",
@@ -306,11 +308,23 @@
         "Updated apps/web/README.md with Clerk setup"
       ],
       "recommendation": "Verify G5"
+    },
+    {
+      "date": "2026-01-22T21:40:00+01:00",
+      "action": "P05 Verified",
+      "changes": [
+        "Verified verified web app boots (Port 3001)",
+        "Verified Sign-in redirect (OK)",
+        "Failed G5: /dashboard returns 500 Error"
+      ],
+      "recommendation": "Debug G5"
     }
   ],
   "next_step": {
-    "recommended_prompt_id": "N04a",
-    "reason": "Clerk middleware configured. Waiting for user verification. Proceeding to N04a (n8n Sync) in parallel ok.",
-    "blocked_by": []
+    "recommended_prompt_id": "Debug G5",
+    "reason": "Verification failed. Application confirmed booting but Auth Middleware crashes (500). Needs fix before enforced auth is Done.",
+    "blocked_by": [
+      "G5"
+    ]
   }
 }

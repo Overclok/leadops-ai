@@ -7,8 +7,15 @@ const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!SUPABASE_URL || !SUPABASE_KEY) {
-    console.error('❌ Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in environment.');
-    console.error('   Please run with: node --env-file=.env.local scripts/healthcheck.mjs');
+    console.error('❌ Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY.');
+    process.exit(1);
+}
+
+const CLERK_SECRET_KEY = process.env.CLERK_SECRET_KEY;
+const CLERK_PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+
+if (!CLERK_SECRET_KEY || !CLERK_PUBLISHABLE_KEY) {
+    console.error('❌ Missing Clerk Keys (CLERK_SECRET_KEY or NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY).');
     process.exit(1);
 }
 

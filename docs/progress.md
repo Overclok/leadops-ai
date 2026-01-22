@@ -20,10 +20,10 @@ Legenda: ✅ done | 🟡 pending | ❓ unknown | ⛔ blocked
 - ✅ **G3 Supabase schema applied & tenant isolation**
   - Evidenze: Healthcheck passed (tenants table exists).
 - ✅ **G4 Web app boots (dev & build)**
-  - Evidenze: `npm install` ✅, `npm run build` ✅
-- 🟡 **G5 Auth works (Clerk)**
-  - Evidenze: Middleware configured, README updated.
-  - Pending: Manual login verification (redirect behavior).
+  - Evidenze: `npm install` ✅, `npm run build` ✅, `npm run dev` ✅ (Port 3001)
+- ⛔ **G5 Auth works (Clerk)**
+  - Evidenze: Middleware configured, "Sign in" button redirects correctly.
+  - Blocking Reason: **500 Internal Server Error** on `/dashboard`. Likely middleware implementation issue or missing server secret.
 
 ---
 
@@ -139,3 +139,20 @@ Legenda: ✅ done | 🟡 pending | ❓ unknown | ⛔ blocked
 - **Risultato**: G5 Pending (Middleware Configured)
 - **Note**: Updated middleware.ts for Clerk v6 protection. Updated README. Manual verification needed for login redirect.
 - **Next Prompt**: N04a
+
+### Run #14 (P05 Verification)
+- **Data**: 2026-01-22 21:40 CET
+- **Auditor**: Antigravity
+- **Risultato**: G4 Done, G5 Blocked
+- **Note**: Web app boots on port 3001. Main page functional. "Sign in" button redirects to Clerk. `/dashboard` returns 500 Check server logs/middleware.
+- **Next Prompt**: Debug G5
+
+### Run #15 (P05 Debug)
+- **Data**: 2026-01-22 21:45 CET
+- **Auditor**: Antigravity
+- **Risultato**: Debugging G5
+- **Note**: 
+  - Verified Clerk keys in `.env.local` using `healthcheck.mjs`. Keys are PRESENT.
+  - Added try/catch and logging to `middleware.ts`.
+  - Next step: User to run `npm run dev` and check terminal for "Clerk Auth Error".
+- **Next Prompt**: Debug G5
