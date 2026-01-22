@@ -35,8 +35,8 @@ Legenda: ✅ done | 🟡 pending | ❓ unknown | ⛔ blocked
 ---
 
 ## Remote n8n Readiness
-- ❓ **RN0 API enabled**
-  - Evidenze: Check pending.
+- ✅ **RN0 API enabled**
+  - Evidenze: API reachable (200 OK), JSON verified.
 - ❓ **RN1 MCP enabled (optional)**
   - Evidenze: Check pending.
 - ❓ **RN2 Service account created (recommended)**
@@ -94,3 +94,17 @@ Legenda: ✅ done | 🟡 pending | ❓ unknown | ⛔ blocked
 - **Risultato**: Added Remote n8n Readiness Gates RN0-RN3
 - **Note**: Defined remote readiness gates in progress ledger.
 - **Next Prompt**: N01
+
+### Run #7 (N02 Execution)
+- **Data**: 2026-01-22 19:07 CET
+- **Auditor**: Antigravity
+- **Risultato**: RN0 Blocked
+- **Note**: Attempted to verify n8n API. Blocked by missing `N8N_BASE_URL` and `N8N_API_KEY` in environment, and `lcalhost:5678` unreachable (likely remote context required).
+- **Next Prompt**: N03
+
+### Run #8 (N02 Retry)
+- **Data**: 2026-01-22 19:12 CET
+- **Auditor**: Antigravity
+- **Risultato**: RN0 Done
+- **Note**: Verified connection to remote n8n instance. 200 OK.
+- **Next Prompt**: N03

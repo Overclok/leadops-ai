@@ -161,8 +161,11 @@
     {
       "id": "RN0",
       "name": "API enabled",
-      "status": "unknown",
-      "evidence": [],
+      "status": "done",
+      "evidence": [
+        "API reachable (200 OK)",
+        "JSON response verified"
+      ],
       "blocking_reason": null,
       "definition_of_done": [
         "Settings -> n8n API enabled",
@@ -237,11 +240,8 @@
     }
   ],
   "next_step": {
-    "recommended_prompt_id": "N01",
-    "reason": "Remote audit required for n8n API/MCP readiness.",
-    "blocked_by": [
-      "RN0",
-      "RN1"
-    ]
+    "recommended_prompt_id": "N03",
+    "reason": "API Verified. Ready explicitly for idempotent tool creation.",
+    "blocked_by": []
   }
 }
