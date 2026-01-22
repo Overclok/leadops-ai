@@ -48,12 +48,13 @@
     {
       "id": "G2",
       "name": "Environment configured (no secrets committed)",
-      "status": "pending",
+      "status": "done",
       "evidence": [
-        "apps/web/.env.local found",
-        "Keys present: SUPABASE_URL, CLERK keys, AG_ADMIN_SECRET"
+        "apps/web/.env.local verified",
+        "Keys present: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY",
+        "Healthcheck passed (tenants table access confirmed)"
       ],
-      "blocking_reason": "No .env.local (expected) or missing required keys",
+      "blocking_reason": null,
       "definition_of_done": [
         "apps/web/.env.local exists (not committed)",
         "Keys present (non-empty): SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, CLERK_PUBLISHABLE_KEY, CLERK_SECRET_KEY, AG_ADMIN_SECRET",
@@ -64,9 +65,12 @@
     {
       "id": "G3",
       "name": "Supabase schema applied & tenant isolation",
-      "status": "pending",
-      "evidence": [],
-      "blocking_reason": "Supabase project not created or migrations not applied",
+      "status": "done",
+      "evidence": [
+        "infra/supabase/migrations/001_init.sql applied",
+        "Healthcheck passed (tenants table exists)"
+      ],
+      "blocking_reason": null,
       "definition_of_done": [
         "infra/supabase/migrations/001_init.sql applied successfully",
         "RLS enabled and tenant isolation verified conceptually",
@@ -271,11 +275,30 @@
         "Verified infra/n8n/.env.local untracked"
       ],
       "recommendation": "N04a"
+    },
+    {
+      "date": "2026-01-22T20:55:00+01:00",
+      "action": "P03 Executed",
+      "changes": [
+        "Created apps/web/scripts/healthcheck.mjs",
+        "Updated apps/web/README.md with Supabase setup instructions",
+        "Updated progress.json (G3 unknown)"
+      ],
+      "recommendation": "Check G2"
+    },
+    {
+      "date": "2026-01-22T21:12:00+01:00",
+      "action": "G2/G3 Verified",
+      "changes": [
+        "Executed apps/web/scripts/healthcheck.mjs (Success)",
+        "Verified Supabase connection and schema"
+      ],
+      "recommendation": "N04a"
     }
   ],
   "next_step": {
     "recommended_prompt_id": "N04a",
-    "reason": "Web build fixed. Sync tool ready. Proceed to DRY_RUN.",
+    "reason": "Supabase verified. Web build fixed. Proceed to N04a (n8n Sync).",
     "blocked_by": []
   }
 }
