@@ -1,0 +1,21 @@
+
+services:
+  n8n:
+    # Pinned for determinism (avoid :latest).
+    image: docker.n8n.io/n8nio/n8n:2.4.4
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - WEBHOOK_URL=http://localhost:5678/
+      - GENERIC_TIMEZONE=Europe/Rome
+      - AG_API_BASE=http://host.docker.internal:3000
+      - AG_TENANT_ID=
+      - AG_WEBHOOK_SECRET=
+      - AG_ADMIN_SECRET=
+    volumes:
+      - n8n_data:/home/node/.n8n
+volumes:
+  n8n_data:

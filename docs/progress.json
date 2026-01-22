@@ -1,0 +1,189 @@
+{
+  "meta": {
+    "project_name": "LeadOps Deterministic SaaS (EU)",
+    "created_at": "2026-01-22T00:00:00+01:00",
+    "timezone": "Europe/Rome",
+    "determinism_policy": "agent/rules/00-determinism.md",
+    "source_of_truth": [
+      "docs/spec.md",
+      "docs/event-contracts.md",
+      "docs/metrics.md",
+      "docs/dashboard-contract.md"
+    ]
+  },
+  "gates": [
+    {
+      "id": "G0",
+      "name": "Repo integrity & structure",
+      "status": "done",
+      "evidence": [
+        "Folders confirmed: .agent/, docs/, infra/, apps/web/",
+        "Key files found: apps/web/package.json, infra/n8n/docker-compose.yml, infra/supabase/migrations/001_init.sql"
+      ],
+      "blocking_reason": null,
+      "definition_of_done": [
+        "Folders exist: .agent/, docs/, infra/, apps/web/",
+        "No placeholder-only files flagged by auditor",
+        "README.md present and coherent with spec"
+      ],
+      "owner_agent": "A0"
+    },
+    {
+      "id": "G1",
+      "name": "Toolchain pinned & deterministic dependency strategy",
+      "status": "done",
+      "evidence": [
+        ".nvmrc pinned to 24.13.0",
+        "package.json engines pinned",
+        "apps/web/package-lock.json generated (v3)"
+      ],
+      "blocking_reason": null,
+      "definition_of_done": [
+        "Node version pinned (.nvmrc or .tool-versions)",
+        "apps/web/package-lock.json exists",
+        "Install instructions: first npm install, then npm ci"
+      ],
+      "owner_agent": "A0"
+    },
+    {
+      "id": "G2",
+      "name": "Environment configured (no secrets committed)",
+      "status": "pending",
+      "evidence": [
+        "apps/web/.env.local found",
+        "Keys present: SUPABASE_URL, CLERK keys, AG_ADMIN_SECRET"
+      ],
+      "blocking_reason": "No .env.local (expected) or missing required keys",
+      "definition_of_done": [
+        "apps/web/.env.local exists (not committed)",
+        "Keys present (non-empty): SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, CLERK_PUBLISHABLE_KEY, CLERK_SECRET_KEY, AG_ADMIN_SECRET",
+        "No secrets found in git-tracked files"
+      ],
+      "owner_agent": "A3"
+    },
+    {
+      "id": "G3",
+      "name": "Supabase schema applied & tenant isolation",
+      "status": "pending",
+      "evidence": [],
+      "blocking_reason": "Supabase project not created or migrations not applied",
+      "definition_of_done": [
+        "infra/supabase/migrations/001_init.sql applied successfully",
+        "RLS enabled and tenant isolation verified conceptually",
+        "Healthcheck script passes (read-only query expected tables)"
+      ],
+      "owner_agent": "A2"
+    },
+    {
+      "id": "G4",
+      "name": "Web app boots (dev and build)",
+      "status": "blocked",
+      "evidence": [
+        "npm install succeeded",
+        "npm run build failed"
+      ],
+      "blocking_reason": "Build failed: Module not found (missing tsconfig paths for @/*)",
+      "definition_of_done": [
+        "apps/web: npm run dev starts",
+        "apps/web: npm run build succeeds"
+      ],
+      "owner_agent": "A0"
+    },
+    {
+      "id": "G5",
+      "name": "Auth works (Clerk) with 1 user per tenant",
+      "status": "pending",
+      "evidence": [],
+      "blocking_reason": "Clerk not configured or protected routes not enforced",
+      "definition_of_done": [
+        "/dashboard requires auth when logged out",
+        "After login, tenant context resolves deterministically",
+        "Cross-tenant access is impossible by design"
+      ],
+      "owner_agent": "A3"
+    },
+    {
+      "id": "G6",
+      "name": "n8n self-hosted runs + workflows imported",
+      "status": "pending",
+      "evidence": [],
+      "blocking_reason": "Docker compose not running or workflows not imported",
+      "definition_of_done": [
+        "infra/n8n/docker-compose.yml running",
+        "Workflows imported: gmail, vapi/twilio, calendly, derive_no_reply",
+        "Required n8n env vars set: AG_API_BASE, AG_ADMIN_SECRET, AG_TENANT_ID"
+      ],
+      "owner_agent": "A7"
+    },
+    {
+      "id": "G7",
+      "name": "End-to-end event ingestion",
+      "status": "pending",
+      "evidence": [],
+      "blocking_reason": "Cannot persist event into DB via /api/events",
+      "definition_of_done": [
+        "POST /api/events with valid signature/secret accepted",
+        "Event stored in Supabase with idempotency enforced",
+        "Duplicate event does not create duplicates"
+      ],
+      "owner_agent": "A7"
+    },
+    {
+      "id": "G8",
+      "name": "Metrics endpoint deterministic",
+      "status": "pending",
+      "evidence": [],
+      "blocking_reason": "Metrics not stable or depends on non-deterministic ordering",
+      "definition_of_done": [
+        "/api/metrics returns stable JSON for same dataset",
+        "Aggregations exist: daily/weekly/monthly, by agent, campaign, product/service",
+        "EMAIL_NO_REPLY rule applied deterministically"
+      ],
+      "owner_agent": "A7"
+    },
+    {
+      "id": "G9",
+      "name": "Dashboard renders KPI + drilldowns + states",
+      "status": "pending",
+      "evidence": [],
+      "blocking_reason": "UI not wired to metrics or missing states",
+      "definition_of_done": [
+        "Dashboard shows totals + trends for selected period",
+        "Lead timeline view exists",
+        "Campaign performance view exists",
+        "Hot products/services ranking exists",
+        "Loading/empty/error states implemented"
+      ],
+      "owner_agent": "A8"
+    }
+  ],
+  "runs": [
+    {
+      "date": "2026-01-22T17:52:54+01:00",
+      "action": "P01 Executed",
+      "changes": [
+        "Created .nvmrc (24.13.0)",
+        "Updated apps/web/package.json engines",
+        "Updated apps/web/README.md"
+      ],
+      "recommendation": "P02"
+    },
+    {
+      "date": "2026-01-22T18:10:00+01:00",
+      "action": "P02 Executed",
+      "changes": [
+        "Run npm install (success)",
+        "Generated apps/web/package-lock.json",
+        "Run npm run build (failed)"
+      ],
+      "recommendation": "P03"
+    }
+  ],
+  "next_step": {
+    "recommended_prompt_id": "P03",
+    "reason": "Build failed due to missing path aliases in tsconfig. Need to fix configuration.",
+    "blocked_by": [
+      "G4"
+    ]
+  }
+}

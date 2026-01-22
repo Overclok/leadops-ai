@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LeadOpsAIEvent",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "tenant_id",
+    "occurred_at",
+    "event_type",
+    "source",
+    "idempotency_key",
+    "payload"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "tenant_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "EMAIL_SENT",
+        "EMAIL_DELIVERED",
+        "EMAIL_BOUNCED",
+        "EMAIL_OPENED",
+        "EMAIL_REPLIED",
+        "EMAIL_NO_REPLY",
+        "CALL_OUTBOUND_STARTED",
+        "CALL_OUTBOUND_CONNECTED",
+        "CALL_INBOUND_RECEIVED",
+        "CALL_ENDED",
+        "MEETING_BOOKED_EMAIL",
+        "MEETING_BOOKED_PHONE",
+        "MEETING_CANCELED",
+        "CAMPAIGN_STARTED",
+        "CAMPAIGN_PAUSED",
+        "CAMPAIGN_COMPLETED",
+        "DEAL_OPENED",
+        "DEAL_WON",
+        "DEAL_LOST",
+        "PRODUCT_INTERESTED",
+        "PRODUCT_SOLD",
+        "ERROR_RECORDED"
+      ]
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "n8n",
+        "manual",
+        "gmail",
+        "vapi",
+        "twilio",
+        "calendly",
+        "system"
+      ]
+    },
+    "idempotency_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "lead": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "match"
+      ],
+      "properties": {
+        "match": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "email": {
+              "type": "string",
+              "format": "email"
+            },
+            "phone": {
+              "type": "string"
+            },
+            "external_id": {
+              "type": "string",
+              "maxLength": 128
+            }
+          },
+          "anyOf": [
+            {
+              "required": [
+                "email"
+              ]
+            },
+            {
+              "required": [
+                "phone"
+              ]
+            },
+            {
+              "required": [
+                "external_id"
+              ]
+            }
+          ]
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 160
+        }
+      }
+    },
+    "campaign_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "product_service_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "agent_id": {
+      "type": "string",
+      "maxLength": 128
+    },
+    "channel": {
+      "type": "string",
+      "enum": [
+        "COLD_EMAIL",
+        "INBOUND_EMAIL",
+        "PHONE_CALL",
+        "CALENDLY"
+      ]
+    },
+    "payload": {
+      "type": "object"
+    }
+  }
+}

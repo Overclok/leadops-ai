@@ -1,0 +1,116 @@
+
+-- LeadOps AI — deterministic schema (Supabase Postgres)
+create extension if not exists "pgcrypto";
+
+do $$ begin
+  create type event_type as enum (
+    'EMAIL_SENT','EMAIL_DELIVERED','EMAIL_BOUNCED','EMAIL_OPENED','EMAIL_REPLIED','EMAIL_NO_REPLY',
+    'CALL_OUTBOUND_STARTED','CALL_OUTBOUND_CONNECTED','CALL_INBOUND_RECEIVED','CALL_ENDED',
+    'MEETING_BOOKED_EMAIL','MEETING_BOOKED_PHONE','MEETING_CANCELED',
+    'CAMPAIGN_STARTED','CAMPAIGN_PAUSED','CAMPAIGN_COMPLETED',
+    'DEAL_OPENED','DEAL_WON','DEAL_LOST',
+    'PRODUCT_INTERESTED','PRODUCT_SOLD',
+    'ERROR_RECORDED'
+  );
+exception when duplicate_object then null; end $$;
+
+do $$ begin
+  create type lead_status as enum ('NEW','CONTACTED','ENGAGED','NEGOTIATION','FOLLOW_UP','WON','LOST','DORMANT');
+exception when duplicate_object then null; end $$;
+
+do $$ begin
+  create type event_source as enum ('n8n','manual','gmail','vapi','twilio','calendly','system');
+exception when duplicate_object then null; end $$;
+
+do $$ begin
+  create type channel_type as enum ('COLD_EMAIL','INBOUND_EMAIL','PHONE_CALL','CALENDLY');
+exception when duplicate_object then null; end $$;
+
+do $$ begin
+  create type error_code as enum ('PROVIDER_AUTH','PROVIDER_TIMEOUT','PROVIDER_RATE_LIMIT','INVALID_SIGNATURE','INVALID_SCHEMA','DUPLICATE_EVENT','DB_CONSTRAINT','MAPPING_ERROR','DELIVERY_FAILURE');
+exception when duplicate_object then null; end $$;
+
+create table if not exists tenants (
+  id uuid primary key default gen_random_uuid(),
+  owner_clerk_user_id text not null unique,
+  name text not null default 'Default Tenant',
+  webhook_secret text not null default encode(gen_random_bytes(32), 'hex'),
+  created_at timestamptz not null default now()
+);
+
+create table if not exists leads (
+  id uuid primary key default gen_random_uuid(),
+  tenant_id uuid not null references tenants(id) on delete cascade,
+  name text,
+  email text,
+  phone text,
+  company text,
+  status lead_status not null default 'NEW',
+  agent_id text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (tenant_id, email),
+  unique (tenant_id, phone)
+);
+
+create table if not exists campaigns (
+  id uuid primary key default gen_random_uuid(),
+  tenant_id uuid not null references tenants(id) on delete cascade,
+  name text not null,
+  channel channel_type not null,
+  started_at timestamptz,
+  ended_at timestamptz
+);
+
+create table if not exists products_services (
+  id uuid primary key default gen_random_uuid(),
+  tenant_id uuid not null references tenants(id) on delete cascade,
+  name text not null,
+  description text
+);
+
+create table if not exists deals (
+  id uuid primary key default gen_random_uuid(),
+  tenant_id uuid not null references tenants(id) on delete cascade,
+  lead_id uuid not null references leads(id) on delete cascade,
+  status text not null default 'OPEN',
+  value_cents bigint not null default 0,
+  currency text not null default 'EUR',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists events (
+  id uuid primary key default gen_random_uuid(),
+  tenant_id uuid not null references tenants(id) on delete cascade,
+  occurred_at timestamptz not null,
+  event_type event_type not null,
+  source event_source not null,
+  channel channel_type,
+  idempotency_key text not null,
+  lead_id uuid references leads(id) on delete set null,
+  campaign_id uuid references campaigns(id) on delete set null,
+  product_service_id uuid references products_services(id) on delete set null,
+  agent_id text,
+  payload jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now(),
+  unique (tenant_id, idempotency_key)
+);
+
+create index if not exists idx_events_tenant_time on events(tenant_id, occurred_at desc);
+create index if not exists idx_events_type_time on events(event_type, occurred_at desc);
+
+-- RLS enabled; deny-by-default (use service role server-side)
+alter table tenants enable row level security;
+alter table leads enable row level security;
+alter table campaigns enable row level security;
+alter table products_services enable row level security;
+alter table deals enable row level security;
+alter table events enable row level security;
+
+do $$ begin create policy "deny_all_tenants" on tenants for all using (false); exception when duplicate_object then null; end $$;
+do $$ begin create policy "deny_all_leads" on leads for all using (false); exception when duplicate_object then null; end $$;
+do $$ begin create policy "deny_all_campaigns" on campaigns for all using (false); exception when duplicate_object then null; end $$;
+do $$ begin create policy "deny_all_products" on products_services for all using (false); exception when duplicate_object then null; end $$;
+do $$ begin create policy "deny_all_deals" on deals for all using (false); exception when duplicate_object then null; end $$;
+do $$ begin create policy "deny_all_events" on events for all using (false); exception when duplicate_object then null; end $$;

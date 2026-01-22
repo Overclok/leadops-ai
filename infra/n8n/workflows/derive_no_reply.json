@@ -1,0 +1,67 @@
+{
+  "name": "LeadOpsAI - Derive EMAIL_NO_REPLY",
+  "nodes": [
+    {
+      "parameters": {
+        "triggerTimes": {
+          "item": [
+            {
+              "mode": "everyDay",
+              "hour": 3,
+              "minute": 5
+            }
+          ]
+        }
+      },
+      "id": "1",
+      "name": "Cron",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [
+        300,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.AG_API_BASE}}/api/internal/derive/no-reply",
+        "method": "POST",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { tenant_id: $env.AG_TENANT_ID, days: 5 } }}",
+        "options": {
+          "timeout": 60000
+        },
+        "headerParametersUi": {
+          "parameter": [
+            {
+              "name": "x-ag-admin",
+              "value": "={{$env.AG_ADMIN_SECRET}}"
+            }
+          ]
+        }
+      },
+      "id": "2",
+      "name": "CallDeriver",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        560,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Cron": {
+      "main": [
+        [
+          {
+            "node": "CallDeriver",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

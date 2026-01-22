@@ -1,0 +1,114 @@
+{
+  "name": "LeadOpsAI - Vapi Adapter",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "leadops/vapi",
+        "httpMethod": "POST",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "1",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        300,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const b = $json.body || $json;\nconst callId = b.call_id || b.callId || b.call?.id || \"unknown\";\nconst phone = b.phone || b.customer?.number || b.call?.customer?.number;\nconst eventType = b.event_type || b.type || \"CALL_ENDED\";\nreturn [{\n  json: {\n    schema_version: 1,\n    tenant_id: $env.AG_TENANT_ID,\n    occurred_at: (b.timestamp ? new Date(b.timestamp).toISOString() : new Date().toISOString()),\n    event_type: eventType,\n    source: \"vapi\",\n    idempotency_key: b.idempotency_key || `vapi:call:${callId}:${eventType}`,\n    channel: \"PHONE_CALL\",\n    lead: phone ? { match: { phone } } : undefined,\n    payload: { ...b, call_id: callId }\n  }\n}];"
+      },
+      "id": "2",
+      "name": "MapToEvent",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [
+        520,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const crypto = require('crypto');\n\nfunction stableStringify(value) {\n  return JSON.stringify(canonicalize(value));\n}\nfunction canonicalize(value) {\n  if (value === null) return null;\n  const t = typeof value;\n  if (t === 'number' || t === 'string' || t === 'boolean') return value;\n  if (Array.isArray(value)) return value.map(canonicalize);\n  if (t === 'object') {\n    const obj = value;\n    const out = {};\n    for (const k of Object.keys(obj).sort()) {\n      const v = obj[k];\n      if (v === undefined) continue;\n      out[k] = canonicalize(v);\n    }\n    return out;\n  }\n  return null;\n}\n\nconst secret = $env.AG_WEBHOOK_SECRET;\nif (!secret) throw new Error('Missing AG_WEBHOOK_SECRET in n8n env');\n\nconst event = $json;\nconst ts = Date.now().toString();\nconst canonical = stableStringify(event);\nconst sig = crypto.createHmac('sha256', secret).update(`${ts}.${canonical}`).digest('hex');\n\nreturn [{ json: { ts, sig, event } }];"
+      },
+      "id": "4",
+      "name": "SignRequest",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [
+        640,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.AG_API_BASE}}/api/events",
+        "method": "POST",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{$json.event}}",
+        "options": {
+          "timeout": 30000
+        },
+        "headerParametersUi": {
+          "parameter": [
+            {
+              "name": "x-ag-ts",
+              "value": "={{$json.ts}}"
+            },
+            {
+              "name": "x-ag-signature",
+              "value": "={{$json.sig}}"
+            }
+          ]
+        }
+      },
+      "id": "3",
+      "name": "PostEvent",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        760,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "MapToEvent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MapToEvent": {
+      "main": [
+        [
+          {
+            "node": "SignRequest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SignRequest": {
+      "main": [
+        [
+          {
+            "node": "PostEvent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

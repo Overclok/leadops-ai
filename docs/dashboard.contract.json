@@ -1,0 +1,111 @@
+{
+  "version": 1,
+  "kpi_cards": [
+    {
+      "key": "email_sent",
+      "label": "Email inviate",
+      "description": "Totale outbound inviate",
+      "primary_metric": "email_sent"
+    },
+    {
+      "key": "email_replied",
+      "label": "Email con risposta",
+      "description": "Risposte umane ricevute",
+      "primary_metric": "email_replied"
+    },
+    {
+      "key": "email_no_reply",
+      "label": "Email senza risposta",
+      "description": "Outbound senza reply dopo 5 giorni",
+      "primary_metric": "email_no_reply"
+    },
+    {
+      "key": "calls_outbound",
+      "label": "Chiamate fatte",
+      "description": "Chiamate outbound avviate",
+      "primary_metric": "calls_outbound"
+    },
+    {
+      "key": "calls_inbound",
+      "label": "Chiamate ricevute",
+      "description": "Chiamate inbound ricevute",
+      "primary_metric": "calls_inbound"
+    },
+    {
+      "key": "meetings_total",
+      "label": "Appuntamenti",
+      "description": "Meeting prenotati (email+telefono)",
+      "primary_metric": "meetings_total"
+    },
+    {
+      "key": "deals_won",
+      "label": "Chiuso vinto",
+      "description": "Deal vinti nel periodo",
+      "primary_metric": "deals_won"
+    },
+    {
+      "key": "deals_lost",
+      "label": "Chiuso perso",
+      "description": "Deal persi nel periodo",
+      "primary_metric": "deals_lost"
+    }
+  ],
+  "filters": [
+    {
+      "key": "period",
+      "type": "enum",
+      "values": [
+        "daily",
+        "weekly",
+        "monthly"
+      ],
+      "default": "weekly"
+    },
+    {
+      "key": "agent_id",
+      "type": "string",
+      "optional": true
+    },
+    {
+      "key": "campaign_id",
+      "type": "uuid",
+      "optional": true
+    },
+    {
+      "key": "product_service_id",
+      "type": "uuid",
+      "optional": true
+    }
+  ],
+  "tables": [
+    {
+      "key": "leads",
+      "columns": [
+        "name",
+        "company",
+        "status",
+        "agent_id",
+        "last_activity_at"
+      ]
+    },
+    {
+      "key": "products",
+      "columns": [
+        "name",
+        "score",
+        "sold",
+        "interested"
+      ]
+    },
+    {
+      "key": "errors",
+      "columns": [
+        "occurred_at",
+        "source",
+        "error_code",
+        "details",
+        "retryable"
+      ]
+    }
+  ]
+}
