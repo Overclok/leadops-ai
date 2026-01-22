@@ -43,12 +43,15 @@ Legenda: ✅ done | 🟡 pending | ❓ unknown | ⛔ blocked
   - Evidenze: Check pending.
 - ❓ **RN3 API key stored in secret manager (not in repo)**
   - Evidenze: Check pending.
+- ✅ **RN4 n8n sync tool exists**
+  - Evidenze: `infra/n8n/scripts/n8n-sync.mjs` created & documented.
+
 
 ---
 
 ## Prossimo step (1 solo)
-**N01 — Remote n8n Audit**
-(Confirm edition/version, enable API/MCP, verify gates RN0-RN3)
+**N04 — Execute n8n Sync**
+(Run DRY_RUN then APPLY, verify imported workflows)
 
 ---
 
@@ -108,3 +111,10 @@ Legenda: ✅ done | 🟡 pending | ❓ unknown | ⛔ blocked
 - **Risultato**: RN0 Done
 - **Note**: Verified connection to remote n8n instance. 200 OK.
 - **Next Prompt**: N03
+
+### Run #9 (N03 Execution)
+- **Data**: 2026-01-22 19:21 CET
+- **Auditor**: Antigravity
+- **Risultato**: RN4 Done
+- **Note**: Created `n8n-sync.mjs` for idempotent workflow provisioning.
+- **Next Prompt**: N04

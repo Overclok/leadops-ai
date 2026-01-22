@@ -20,3 +20,34 @@ In questo pack il workflow include già il nodo **SignRequest** (HMAC determinis
 - [ ] Settings -> n8n API (enabled?)
 - [ ] Settings -> Instance-level MCP (enabled?)
 - [ ] Version + edition (screenshot/log evidence)
+
+## Deterministic provisioning via n8n-sync
+
+Use the `n8n-sync.mjs` script to idempotently sync local JSON workflows to a remote n8n instance.
+
+**Prerequisites:**
+1.  Enable n8n API in Settings.
+2.  Generate an API Key.
+3.  Store credentials in `.env.local` or a secret manager (NOT in git):
+    ```bash
+    N8N_BASE_URL=https://your-n8n-instance.com
+    N8N_API_KEY=your-api-key-here
+    ```
+
+**Usage:**
+
+1.  **DRY RUN** (Prints plan only):
+    ```bash
+    node infra/n8n/scripts/n8n-sync.mjs
+    ```
+
+2.  **APPLY** (Executes changes):
+    ```bash
+    APPLY=true node infra/n8n/scripts/n8n-sync.mjs
+    ```
+
+**Safety Rules:**
+-   Never commit `.env` files containing `N8N_API_KEY`.
+-   The script will refuse to run if `APPLY=true` is not set explicitly for writes.
+-   Workflow identity is based on the "name" field in the JSON.
+
