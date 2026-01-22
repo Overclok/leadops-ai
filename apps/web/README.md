@@ -74,9 +74,20 @@ Since we are using existing infrastructure or manual provisioning for now (no lo
    - Go to Supabase Dashboard -> SQL Editor -> New Query.
    - Paste and Run.
 
-4. **Verify Health**:
-   Run the deterministic healthcheck script to prove connectivity and schema existence:
-   ```bash
-   node --env-file=.env.local scripts/healthcheck.mjs
-   ```
-   If successful, it will verify access to the `tenants` table.
+    If successful, it will verify access to the `tenants` table.
+
+## Deployment to Vercel (Monorepo & Next.js 16)
+
+To deploy this application to Vercel, you must configure the following project settings:
+
+1. **Root Directory**: Set this to `apps/web`. Vercel will then auto-detect Next.js.
+2. **Environment Variables**: You must manually add all variables from your `apps/web/.env.local` to the Vercel Dashboard (Settings > Environment Variables). Required keys include:
+   - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
+   - `CLERK_SECRET_KEY`
+   - `SUPABASE_URL`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+   - `AG_ADMIN_SECRET`
+3. **Node.js Version**: In Project Settings > General, ensure the Node.js version is set to **24.x** (compatible with our `.nvmrc`).
+4. **Proxy (Middleware)**: This project uses the Next.js 16 `proxy.ts` convention (located in `src/proxy.ts`). Ensure you have updated the code to use the **named export** `proxy` for production compatibility.
+
+**Warning**: If you see a Vercel 404 error, double-check that the **Root Directory** is explicitly set to `apps/web`.

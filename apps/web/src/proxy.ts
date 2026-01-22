@@ -8,7 +8,7 @@ const isProtectedRoute = createRouteMatcher([
   "/api/internal(.*)",
 ]);
 
-export default clerkMiddleware(async (auth, req) => {
+export const proxy = clerkMiddleware(async (auth, req) => {
   // Protect routes that require authentication
   if (isProtectedRoute(req)) {
     await auth.protect();

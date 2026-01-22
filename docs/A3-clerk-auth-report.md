@@ -18,6 +18,7 @@ Integrate Clerk authentication with a **strict 1-user-per-tenant model**, ensuri
 **File**: `apps/web/src/proxy.ts` (Next.js 16 convention, formerly `middleware.ts`)
 
 - Replaced bare middleware with Clerk's `clerkMiddleware`.
+- **Convention Update**: Uses **named export** `export const proxy` as required by Next.js 16 for production deployment.
 - Protected routes using `createRouteMatcher`:
   - `/dashboard` - Requires auth
   - `/api/tenant` - Requires auth
@@ -27,7 +28,10 @@ Integrate Clerk authentication with a **strict 1-user-per-tenant model**, ensuri
   - `/` - Homepage
   - `/api/events` - Webhook ingestion (validated via HMAC)
 
-**Version**: `@clerk/nextjs@6.36.9` (upgraded from 6.0.0 for Next.js 16 compatibility)
+**Version**: `@clerk/nextjs@6.36.9` (upgraded for Next.js 16 compatibility)
+
+**Vercel Deployment Note**:
+When deploying to Vercel, ensure the **Root Directory** is set to `apps/web` and all environment variables are added. A 404 error typically means Vercel is looking at the repository root instead of the application subfolder.
 
 ### 2. Tenant Resolution Library
 **File**: `apps/web/src/lib/tenant.ts`
