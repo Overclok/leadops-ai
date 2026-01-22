@@ -68,6 +68,7 @@
       "status": "done",
       "evidence": [
         "infra/supabase/migrations/001_init.sql applied",
+        "infra/supabase/migrations/002_schema_update.sql created (Full RLS & Views)",
         "Healthcheck passed (tenants table exists)"
       ],
       "blocking_reason": null,
@@ -326,6 +327,16 @@
         "Updated docs/spec.md (Scope, Assumptions, Non-Goals)",
         "Frozen docs/event-contracts.md",
         "Frozen docs/dashboard-contract.md"
+      ],
+      "recommendation": "Debug G5"
+    },
+    {
+      "date": "2026-01-22T22:25:00+01:00",
+      "action": "A2 Schema Implementation",
+      "changes": [
+        "Created infra/supabase/migrations/002_schema_update.sql",
+        " implemented RLS policies for tenant isolation",
+        "Added analytics_kpi_daily and errors_view"
       ],
       "recommendation": "Debug G5"
     }

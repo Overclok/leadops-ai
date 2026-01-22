@@ -18,7 +18,7 @@ Legenda: ✅ done | 🟡 pending | ❓ unknown | ⛔ blocked
 - ✅ **G2 Env configured (no secrets committed)**
   - Evidenze: .env.local verified, Healthcheck passed.
 - ✅ **G3 Supabase schema applied & tenant isolation**
-  - Evidenze: Healthcheck passed (tenants table exists).
+  - Evidenze: Healthcheck passed (tenants table exists). `001_init.sql` and `002_schema_update.sql` (RLS) created.
 - ✅ **G4 Web app boots (dev & build)**
   - Evidenze: `npm install` ✅, `npm run build` ✅, `npm run dev` ✅ (Port 3001)
 - ⛔ **G5 Auth works (Clerk)**
@@ -43,8 +43,8 @@ Legenda: ✅ done | 🟡 pending | ❓ unknown | ⛔ blocked
 ---
 
 ## Prossimo step (1 solo)
-**N04a — Execute n8n Sync**
-(Run DRY_RUN then APPLY, verify imported workflows)
+**Debug G5 — Fix 500 Error on /dashboard**
+(Verify Clerk Middleware and Environment Keys)
 
 ---
 
@@ -167,4 +167,14 @@ Legenda: ✅ done | 🟡 pending | ❓ unknown | ⛔ blocked
   - Frozen `docs/event-contracts.md` (Schema, Ingestion, Derived Events).
   - Frozen `docs/dashboard-contract.md` (JSON-backed).
   - **Decision**: All downstream agents (A2, A3, A4, A10) are GO.
+- **Next Prompt**: Debug G5
+
+### Run #17 (A2 Schema Implementation)
+- **Data**: 2026-01-22 22:25 CET
+- **Auditor**: Antigravity
+- **Risultato**: G3 Reinforced
+- **Note**:
+  - Created `infra/supabase/migrations/002_schema_update.sql` (Job Runs, RLS Policies, Views).
+  - Implemented `analytics_kpi_daily` and `errors_view`.
+  - RLS Policies enforce `auth.jwt() ->> 'sub'` mapping to tenant owner.
 - **Next Prompt**: Debug G5
