@@ -32,9 +32,10 @@ We recommend creating a specific user for automation to keep logs distinct.
 4.  Copy the key immediately (it is shown only once).
 
 ### 3. Secret Management
-**CRITICAL**: Do NOT store the API Key in this repository (no `.env` files).
+**CRITICAL**: Do NOT store the API Key in this repository (no `.env` files committed).
 1.  Store the key in **Antigravity/Easypanel** (Project Secrets) as `N8N_API_KEY`.
-2.  Ensure `N8N_BASE_URL` is also set (e.g., `https://n8n.leadops.dev`).
+2.  Also set `N8N_BASE_URL` (e.g., `https://n8n.leadops.dev` or `http://localhost:5678`).
+3.  For local scripts (n8n-sync), use `infra/n8n/.env.local` (git-ignored).
 
 ## Deterministic provisioning via n8n-sync
 
@@ -66,3 +67,10 @@ Use the `n8n-sync.mjs` script to idempotently sync local JSON workflows to a rem
 -   The script will refuse to run if `APPLY=true` is not set explicitly for writes.
 -   Workflow identity is based on the "name" field in the JSON.
 
+
+## Verification Checklist
+Where to check in n8n UI (Manually):
+
+- [ ] **Settings -> n8n API**: Is it enabled?
+- [ ] **Settings -> Instance-level MCP**: Is it enabled? (Optional)
+- [ ] **About / Version**: Capture Version + edition screen evidence.
