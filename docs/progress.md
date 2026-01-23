@@ -6,6 +6,7 @@
 - Ogni step esegue **una sola cosa** e poi si riesegue l’Auditor.
 - Se manca info/chiavi/servizi esterni: lo stato è **BLOCKED** con motivo esplicito.
 - Determinismo > velocità. Se “funziona ma non è ripetibile”, è rotto.
+- Crea un file report come esempio guarda il file (A3-clerk-auth-report.md)
 
 ## Stato attuale (snapshot)
 
@@ -40,13 +41,15 @@ Legenda: ✅ done | 🟡 pending | ❓ unknown | ⛔ blocked
   - Evidenze: Instructions in `infra/n8n/README.md`.
 - ✅ **RN4 n8n sync tool exists**
   - Evidenze: `infra/n8n/scripts/n8n-sync.mjs` created & documented.
+- ✅ **RN5 Workflows imported**
+  - Evidenze: 4 workflows applied via sync tool (Calendly, Gmail, Vapi, No-Reply).
 
 ---
 
 ## Prossimo step (1 solo)
 
-**N03 — Import Workflows**
-(Execute `n8n-sync.mjs` to apply workflows to remote)
+**N05 — Credentials & Env**
+(Activate triggers only after credentials and env exist)
 
 ---
 
@@ -138,3 +141,14 @@ Legenda: ✅ done | 🟡 pending | ❓ unknown | ⛔ blocked
   - Ready for N04 (Workflow Import).
 - **Next Prompt**: N04
 
+### Run #26 (N04 Import Workflows)
+
+- **Data**: 2026-01-23 10:45 CET
+- **Auditor**: N8N_PROVISIONER (Antigravity)
+- **Risultato**: ✅ RN5 Verified
+- **Note**:
+  - Executed `n8n-sync.mjs` in APPLY mode.
+  - Fixes: Injected defaults for `settings`, changed PATCH to PUT.
+  - Workflows created: `calendly_adapter`, `gmail_adapter`, `vapi_adapter`, `derive_no_reply`.
+  - Next: Do not activate until credentials set.
+- **Next Prompt**: N05

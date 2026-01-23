@@ -240,6 +240,20 @@
         "README updated"
       ],
       "owner_agent": "N8N_AUDITOR"
+    },
+    {
+      "id": "RN5",
+      "name": "Workflows imported",
+      "status": "done",
+      "evidence": [
+        "4 workflows applied via sync tool (Calendly, Gmail, Vapi, No-Reply)"
+      ],
+      "blocking_reason": null,
+      "definition_of_done": [
+        "n8n-sync.mjs APPLY executed successfully",
+        "Workflows visible in n8n UI (verified via update check)"
+      ],
+      "owner_agent": "N8N_PROVISIONER"
     }
   ],
   "runs": [
@@ -442,11 +456,21 @@
         "Updated infra/n8n/README.md"
       ],
       "recommendation": "N04"
+    },
+    {
+      "date": "2026-01-23T10:45:00+01:00",
+      "action": "N04 Executed",
+      "changes": [
+        "Executed n8n-sync.mjs in APPLY mode",
+        "Fixed n8n-sync.mjs bugs (settings, PUT vs PATCH)",
+        "Created 4 workflows remotely"
+      ],
+      "recommendation": "N05"
     }
   ],
   "next_step": {
-    "recommended_prompt_id": "N04",
-    "reason": "Sync tool ready. Proceed to import workflows.",
+    "recommended_prompt_id": "N05",
+    "reason": "Workflows imported. Credentials setup needed next.",
     "blocked_by": []
   }
 }

@@ -182,13 +182,18 @@ async function main() {
         // Remove internal meta keys if any
         const { _filename, ...payload } = data;
 
+        // Ensure settings exist to satisfy API validation
+        if (!payload.settings) {
+            payload.settings = { executionOrder: 'v1' };
+        }
+
         try {
             if (type === 'CREATE') {
                 const created = await n8nRequest('/api/v1/workflows', 'POST', payload);
                 console.log(`CREATED ${name} (ID: ${created.id})`);
             } else if (type === 'UPDATE') {
                 // PATCH /workflows/{id}
-                await n8nRequest(`/api/v1/workflows/${id}`, 'PATCH', payload);
+                await n8nRequest(`/api/v1/workflows/${id}`, 'PUT', payload);
                 console.log(`UPDATED ${name} (ID: ${id})`);
             }
         } catch (err) {
