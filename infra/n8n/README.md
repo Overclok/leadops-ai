@@ -56,6 +56,11 @@ Use the `n8n-sync.mjs` script to idempotently sync local JSON workflows to a rem
     ```bash
     node infra/n8n/scripts/n8n-sync.mjs
     ```
+    Output format:
+    ```
+    CREATE <workflow-name>
+    UPDATE <workflow-name>
+    ```
 
 2.  **APPLY** (Executes changes):
     ```bash
@@ -66,11 +71,5 @@ Use the `n8n-sync.mjs` script to idempotently sync local JSON workflows to a rem
 -   Never commit `.env` files containing `N8N_API_KEY`.
 -   The script will refuse to run if `APPLY=true` is not set explicitly for writes.
 -   Workflow identity is based on the "name" field in the JSON.
+-   Secrets must be configured in n8n UI beforehand (Credentials).
 
-
-## Verification Checklist
-Where to check in n8n UI (Manually):
-
-- [ ] **Settings -> n8n API**: Is it enabled?
-- [ ] **Settings -> Instance-level MCP**: Is it enabled? (Optional)
-- [ ] **About / Version**: Capture Version + edition screen evidence.

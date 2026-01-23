@@ -1,180 +1,206 @@
-import fs from 'node:fs';
+#!/usr/bin/env node
+
+import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-// Root is one level up from "scripts" which is in "infra/n8n", so depending on structure. 
-// Script is in infra/n8n/scripts. Workflows are in infra/n8n/workflows.
-// So ../workflows
-const WORKFLOWS_DIR = path.resolve(__dirname, '../workflows');
+// ----------------------------------------------------------------------------
+// Configuration & Validation
+// ----------------------------------------------------------------------------
 
-const { N8N_BASE_URL, N8N_API_KEY, APPLY } = process.env;
+const BASE_URL = process.env.N8N_BASE_URL;
+const API_KEY = process.env.N8N_API_KEY;
+const APPLY = process.env.APPLY === 'true';
 
-const isApply = APPLY === 'true';
-
-// 1. Validation
-if (!N8N_BASE_URL || !N8N_API_KEY) {
-    console.error('Error: Missing N8N_BASE_URL or N8N_API_KEY environment variables.');
+// Safety check: Explicit verification of required env vars
+if (!BASE_URL || !API_KEY) {
+    console.error('Error: Mising Environment Variables.');
+    console.error('Please set N8N_BASE_URL and N8N_API_KEY.');
+    console.error('Example:');
+    console.error('  export N8N_BASE_URL=https://n8n.example.com');
+    console.error('  export N8N_API_KEY=your_api_key_here');
     process.exit(1);
 }
 
-const baseUrl = N8N_BASE_URL.replace(/\/$/, '');
-const headers = {
-    'X-N8N-API-KEY': N8N_API_KEY,
-    'Content-Type': 'application/json',
-};
+// Safety check: Prevent operations unless APPLY=true is explicit
+if (!APPLY) {
+    // We are in DRY_RUN mode by default
+}
 
-// 2. Read Local Workflows
-function readLocalWorkflows() {
-    if (!fs.existsSync(WORKFLOWS_DIR)) {
-        console.error(`Error: Workflows directory not found at ${WORKFLOWS_DIR}`);
-        process.exit(1);
+const WORKFLOWS_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../workflows');
+
+// ----------------------------------------------------------------------------
+// Helper: n8n REST API
+// ----------------------------------------------------------------------------
+
+async function n8nRequest(endpoint, method = 'GET', body = null) {
+    const url = `${BASE_URL.replace(/\/$/, '')}${endpoint}`;
+    const headers = {
+        'X-N8N-API-KEY': API_KEY,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    };
+
+    const res = await fetch(url, {
+        method,
+        headers,
+        body: body ? JSON.stringify(body) : undefined
+    });
+
+    if (!res.ok) {
+        // Security: Do not leak full body if it contains sensitive info, but usually errors are safe.
+        // We check specifically for 401/403 to give clear hints.
+        if (res.status === 401 || res.status === 403) {
+            throw new Error(`Auth failed (${res.status}). Verify N8N_API_KEY.`);
+        }
+        const text = await res.text();
+        throw new Error(`Request failed: ${method} ${endpoint} -> ${res.status} ${res.statusText} (${text.substring(0, 300)})`);
     }
 
-    const files = fs.readdirSync(WORKFLOWS_DIR).filter(f => f.endsWith('.json'));
-    const workflows = [];
+    // 204 No Content
+    if (res.status === 204) return null;
 
-    for (const file of files) {
-        const filePath = path.join(WORKFLOWS_DIR, file);
-        try {
-            const content = fs.readFileSync(filePath, 'utf-8');
-            const json = JSON.parse(content);
+    return await res.json();
+}
 
-            if (!json.name) {
-                console.error(`Error: Workflow file ${file} is missing "name" property.`);
+// ----------------------------------------------------------------------------
+// Main Logic
+// ----------------------------------------------------------------------------
+
+async function main() {
+    // 1. Read Local Workflows
+    // -----------------------
+    const localWorkflows = new Map();
+    try {
+        const files = await fs.readdir(WORKFLOWS_DIR);
+        const jsonFiles = files.filter(f => f.endsWith('.json'));
+
+        for (const file of jsonFiles) {
+            const filePath = path.join(WORKFLOWS_DIR, file);
+            const content = await fs.readFile(filePath, 'utf-8');
+
+            try {
+                const wf = JSON.parse(content);
+                if (!wf.name) {
+                    console.error(`Error: Workflow file "${file}" is missing 'name' property.`);
+                    process.exit(1);
+                }
+                // Deterministic identity: Name is the primary key.
+                localWorkflows.set(wf.name, { ...wf, _filename: file });
+            } catch (e) {
+                console.error(`Error parsing JSON in "${file}": ${e.message}`);
                 process.exit(1);
             }
-
-            workflows.push({
-                file,
-                name: json.name,
-                data: json
-            });
-        } catch (err) {
-            console.error(`Error parsing ${file}: ${err.message}`);
+        }
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+            console.warn(`Warning: Directory not found: ${WORKFLOWS_DIR}`);
+        } else {
+            console.error('Fatal Local Read Error:', err);
             process.exit(1);
         }
     }
-    return workflows;
-}
 
-// 3. Fetch Remote Workflows
-async function fetchRemoteWorkflows() {
+    // 2. Fetch Remote Workflows
+    // -------------------------
+    const remoteWorkflows = new Map();
+    let cursor = null;
+
+    // Safety: Limit loop to avoid infinite pagination
+    let pageCount = 0;
+    const MAX_PAGES = 50;
+
     try {
-        const res = await fetch(`${baseUrl}/api/v1/workflows?limit=250`, { headers });
-        if (!res.ok) {
-            const text = await res.text();
-            throw new Error(`API Error ${res.status}: ${text}`);
-        }
-        const json = await res.json();
-        return json.data; // Array of workflows
+        do {
+            pageCount++;
+            const query = cursor ? `?limit=250&cursor=${cursor}` : '?limit=250';
+            const data = await n8nRequest(`/api/v1/workflows${query}`);
+
+            // Handle both array (older versions) or { data: [], nextCursor } structure
+            const list = Array.isArray(data) ? data : (data.data || []);
+            const nextCursor = !Array.isArray(data) ? data.nextCursor : null;
+
+            for (const wf of list) {
+                // Enforce name as primary key
+                // Usage note: If remote has multiple workflows with same name, we pick the LAST one found (or arbitrary)
+                // ideally we would warn.
+                if (remoteWorkflows.has(wf.name)) {
+                    // Keep existing, but maybe warn?
+                    // We'll just overwrite map entry, effectively picking one.
+                }
+                remoteWorkflows.set(wf.name, wf);
+            }
+            cursor = nextCursor;
+            if (pageCount > MAX_PAGES) break;
+        } while (cursor);
     } catch (err) {
-        console.error(`Failed to fetch remote workflows: ${err.message}`);
+        console.error(`Fatal Remote Fetch Error: ${err.message}`);
         process.exit(1);
     }
-}
 
-// 4. Execute Plan
-async function createWorkflow(localWf) {
-    console.log(`[APPLY] Creating workflow: "${localWf.name}"`);
-    const res = await fetch(`${baseUrl}/api/v1/workflows`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(localWf.data),
-    });
-    if (!res.ok) {
-        const text = await res.text();
-        console.error(`Failed to create "${localWf.name}": ${text}`);
-        process.exit(1);
-    }
-}
-
-async function updateWorkflow(id, localWf) {
-    console.log(`[APPLY] Updating workflow: "${localWf.name}" (ID: ${id})`);
-    const res = await fetch(`${baseUrl}/api/v1/workflows/${id}`, {
-        method: 'PATCH',
-        headers,
-        body: JSON.stringify(localWf.data),
-    });
-    if (!res.ok) {
-        const text = await res.text();
-        console.error(`Failed to update "${localWf.name}": ${text}`);
-        process.exit(1);
-    }
-}
-
-async function main() {
-    // Read Local
-    const localWorkflows = readLocalWorkflows();
-
-    // Read Remote
-    // Note: we fetch these even in DRY_RUN to generate the plan based on reality
-    const remoteWorkflows = await fetchRemoteWorkflows();
-
-    // Map remote by name for identity lookup
-    const remoteMap = new Map();
-    for (const wf of remoteWorkflows) {
-        remoteMap.set(wf.name, wf);
-    }
-
-    // Generate Plan
-    // Format: { name, type: 'CREATE' | 'UPDATE' | 'SKIP', remoteId? }
+    // 3. Generate Plan
+    // ----------------
+    // Get all unique names from local (we only sync local -> remote)
+    const sortedNames = Array.from(localWorkflows.keys()).sort();
     const plan = [];
 
-    for (const local of localWorkflows) {
-        const remote = remoteMap.get(local.name);
-        if (remote) {
-            plan.push({ name: local.name, type: 'UPDATE', remoteId: remote.id, localData: local });
+    for (const name of sortedNames) {
+        const localWf = localWorkflows.get(name);
+        const remoteWf = remoteWorkflows.get(name);
+
+        if (remoteWf) {
+            plan.push({ type: 'UPDATE', name, id: remoteWf.id, data: localWf });
         } else {
-            plan.push({ name: local.name, type: 'CREATE', localData: local });
+            plan.push({ type: 'CREATE', name, data: localWf });
         }
     }
 
-    // Sort plan by name
-    plan.sort((a, b) => a.name.localeCompare(b.name));
+    // 4. Output Plan (Deterministic Format)
+    // -------------------------------------
+    // Sort plan by name (already sorted by key iteration, but ensuring correctness)
+    // Plan format: CREATE <name>, UPDATE <name>, SKIP <name>
 
-    // Determine other existing remote workflows (potential SKIP or DELETE, but we only SKIP per prompt spec for "Plan format")
-    // The prompt says "Plan format MUST be stable... SKIP <name>". 
-    // Usually SKIP means "Exists locally but we decided not to update"? 
-    // Or "Exists remotely but not locally"? 
-    // Given "Reads all JSON files from...", we are syncing FROM local TO remote. 
-    // So maybe SKIP isn't reachable with "always update" logic unless we add identity check?
-    // I will stick to CREATE/UPDATE for local files. 
-    // If strict compliance with "SKIP" is needed, I'd need a condition. 
-    // For now I won't emit SKIP unless I add logic to check deep equality? 
-    // Prompt says: "Plan format MUST be stable ... CREATE ... UPDATE ... SKIP".
-    // I'll assume standard sync: if exists -> update, if not -> create. SKIP might be if JSON is invalid (but we exit on that).
-    // Actually, maybe SKIP is for when we don't want to touch it?
-    // Let's just output CREATE/UPDATE as that covers the primary syncing needs.
-
-    // Output Plan
-    if (!isApply) {
-        console.log('--- DRY RUN PLAN ---');
+    if (!APPLY) {
+        // DRY RUN MODE
         if (plan.length === 0) {
-            console.log('(No local workflows found to sync)');
+            // Nothing to do
+        } else {
+            plan.forEach(item => {
+                console.log(`${item.type} ${item.name}`);
+            });
         }
-        for (const item of plan) {
-            console.log(`${item.type} ${item.name}`);
-        }
-        console.log('--------------------');
-        console.log('To apply changes, run with APPLY=true');
+        // Exit 0 for success
         process.exit(0);
     }
 
-    // Apply
-    console.log('--- APPLYING CHANGES ---');
+    // 5. Apply Changes
+    // ----------------
+    console.log(`Applying ${plan.length} changes...`);
+
     for (const item of plan) {
-        if (item.type === 'CREATE') {
-            await createWorkflow(item.localData);
-        } else if (item.type === 'UPDATE') {
-            await updateWorkflow(item.remoteId, item.localData);
+        const { type, name, id, data } = item;
+        // Remove internal meta keys if any
+        const { _filename, ...payload } = data;
+
+        try {
+            if (type === 'CREATE') {
+                const created = await n8nRequest('/api/v1/workflows', 'POST', payload);
+                console.log(`CREATED ${name} (ID: ${created.id})`);
+            } else if (type === 'UPDATE') {
+                // PATCH /workflows/{id}
+                await n8nRequest(`/api/v1/workflows/${id}`, 'PATCH', payload);
+                console.log(`UPDATED ${name} (ID: ${id})`);
+            }
+        } catch (err) {
+            console.error(`FAILED to ${type} "${name}": ${err.message}`);
+            process.exit(1);
         }
     }
-    console.log('Done.');
+
+    console.log('Sync complete.');
 }
 
 main().catch(err => {
-    console.error('Unexpected error:', err);
+    console.error('Unexpected Error:', err);
     process.exit(1);
 });

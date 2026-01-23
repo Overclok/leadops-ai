@@ -126,3 +126,15 @@ Legenda: ✅ done | 🟡 pending | ❓ unknown | ⛔ blocked
   - Returned HTTP 200 (Count: 0).
   - Verified connectivity and auth via MCP.
 - **Next Prompt**: N03
+
+### Run #25 (N03 Sync Tool Implementation)
+
+- **Data**: 2026-01-23 10:25 CET
+- **Auditor**: Antigravity
+- **Risultato**: ✅ RN4 Verified
+- **Note**:
+  - Implemented `infra/n8n/scripts/n8n-sync.mjs` with deterministic plan, API Key auth, and safety checks.
+  - Updated `infra/n8n/README.md` with usage instructions (DRY_RUN vs APPLY).
+  - Ready for N04 (Workflow Import).
+- **Next Prompt**: N04
+
