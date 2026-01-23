@@ -10,7 +10,7 @@
 
 ## Stato attuale (snapshot)
 
-> Progetto dichiarato “vergine”: nessun `npm install` ancora eseguito.
+> Progetto inizializzato: `npm install` eseguito, environment configurato, n8n in fase di provisioning.
 
 Legenda: ✅ done | 🟡 pending | ❓ unknown | ⛔ blocked
 
@@ -152,3 +152,16 @@ Legenda: ✅ done | 🟡 pending | ❓ unknown | ⛔ blocked
   - Workflows created: `calendly_adapter`, `gmail_adapter`, `vapi_adapter`, `derive_no_reply`.
   - Next: Do not activate until credentials set.
 - **Next Prompt**: N05
+
+### Run #27 (N05 Credentials & Activation Plan)
+
+- **Data**: 2026-01-23 11:20 CET
+- **Auditor**: Antigravity
+- **Risultato**: Docs Created (Pending User Action)
+- **Note**:
+  - Created infra/n8n/credentials.md (Detailed setup)
+  - Created infra/n8n/runtime-config.md (Env vars)
+  - Created docs/runbooks/n8n-activation.md (Strict runbook)
+  - Updated infra/n8n/README.md
+  - Corrected legacy 'vergine' status.
+- **Next Prompt**: Execute Activation Runbook (Manual)

@@ -73,3 +73,12 @@ Use the `n8n-sync.mjs` script to idempotently sync local JSON workflows to a rem
 -   Workflow identity is based on the "name" field in the JSON.
 -   Secrets must be configured in n8n UI beforehand (Credentials).
 
+
+## Configuration & Activation
+
+To define credentials (Gmail, Calendly, Vapi) and runtime variables (TENANT_ID, WEBHOOK_SECRET), please refer to the following guides:
+- [Credentials Checklist](credentials.md)
+- [Runtime Config](runtime-config.md)
+
+Once configured, follow the **strict activation order**:
+- [Activation Runbook](../../docs/runbooks/n8n-activation.md)

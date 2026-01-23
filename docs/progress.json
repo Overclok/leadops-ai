@@ -458,19 +458,20 @@
       "recommendation": "N04"
     },
     {
-      "date": "2026-01-23T10:45:00+01:00",
-      "action": "N04 Executed",
+      "date": "2026-01-23T11:20:00+01:00",
+      "action": "N05 Credentials & Activation Plan",
       "changes": [
-        "Executed n8n-sync.mjs in APPLY mode",
-        "Fixed n8n-sync.mjs bugs (settings, PUT vs PATCH)",
-        "Created 4 workflows remotely"
+        "Created infra/n8n/credentials.md (Detailed setup)",
+        "Created infra/n8n/runtime-config.md (Env vars)",
+        "Created docs/runbooks/n8n-activation.md (Strict runbook)",
+        "Updated infra/n8n/README.md"
       ],
-      "recommendation": "N05"
+      "recommendation": "Execute Activation Runbook"
     }
   ],
   "next_step": {
-    "recommended_prompt_id": "N05",
-    "reason": "Workflows imported. Credentials setup needed next.",
+    "recommended_prompt_id": "User_Manual_Action",
+    "reason": "User must now create credentials in n8n UI and set env vars as per newly created docs.",
     "blocked_by": []
   }
 }
