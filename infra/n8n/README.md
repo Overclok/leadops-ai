@@ -16,10 +16,25 @@ Poi:
 Nota: la firma HMAC (`x-ag-signature`) va calcolata in n8n con un Function node prima dell’HTTP Request.
 In questo pack il workflow include già il nodo **SignRequest** (HMAC deterministica) e popola automaticamente `x-ag-ts` e `x-ag-signature`.
 
-## Remote Config Checklist
-- [ ] Settings -> n8n API (enabled?)
-- [ ] Settings -> Instance-level MCP (enabled?)
-- [ ] Version + edition (screenshot/log evidence)
+## Security & Provisioning
+
+### 1. Dedicated Service Account
+We recommend creating a specific user for automation to keep logs distinct.
+1.  Log in to n8n as owner.
+2.  Go to **Settings** > **Users**.
+3.  Invite a new user (e.g., `audit@leadops.ai`) or create a service user.
+4.  Log in as this new user to generate keys.
+
+### 2. API Key Generation
+1.  Go to **Settings** > **Personal API Key**.
+2.  Click **Create API Key**.
+3.  Label it `LeadOps_Automation`.
+4.  Copy the key immediately (it is shown only once).
+
+### 3. Secret Management
+**CRITICAL**: Do NOT store the API Key in this repository (no `.env` files).
+1.  Store the key in **Antigravity/Easypanel** (Project Secrets) as `N8N_API_KEY`.
+2.  Ensure `N8N_BASE_URL` is also set (e.g., `https://n8n.leadops.dev`).
 
 ## Deterministic provisioning via n8n-sync
 
@@ -27,7 +42,7 @@ Use the `n8n-sync.mjs` script to idempotently sync local JSON workflows to a rem
 
 **Prerequisites:**
 1.  Enable n8n API in Settings.
-2.  Generate an API Key.
+2.  Complete steps 1-3 above (User, Key, Secrets).
 3.  Store credentials in `.env.local` or a secret manager (NOT in git):
     ```bash
     N8N_BASE_URL=https://your-n8n-instance.com

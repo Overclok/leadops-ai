@@ -202,8 +202,10 @@
     {
       "id": "RN2",
       "name": "Service account created",
-      "status": "unknown",
-      "evidence": [],
+      "status": "pending",
+      "evidence": [
+        "Instructions documented in infra/n8n/README.md"
+      ],
       "blocking_reason": null,
       "definition_of_done": [
         "Service account for auditing created"
@@ -213,8 +215,10 @@
     {
       "id": "RN3",
       "name": "API key stored",
-      "status": "unknown",
-      "evidence": [],
+      "status": "pending",
+      "evidence": [
+        "Instructions documented in infra/n8n/README.md"
+      ],
       "blocking_reason": null,
       "definition_of_done": [
         "API Key stored in secret manager",
@@ -380,11 +384,20 @@
         "Schema sync complete: tenants, leads, campaigns, products, deals, events, users, job_runs, error_logs"
       ],
       "recommendation": "G6"
+    },
+    {
+      "date": "2026-01-23T09:22:00+01:00",
+      "action": "N01 Provisioning Docs",
+      "changes": [
+        "Updated infra/n8n/README.md with Service Account & API Key instructions",
+        "Mandated secret manager usage for N8N_API_KEY"
+      ],
+      "recommendation": "N02"
     }
   ],
   "next_step": {
-    "recommended_prompt_id": "G6",
-    "reason": "G3 (Schema) and G5 (Auth) are now fully DONE and VERIFIED. Next: Import n8n workflows.",
+    "recommended_prompt_id": "N02",
+    "reason": "Provisioning instructions documented. Ready to verify connectivity with new keys.",
     "blocked_by": []
   }
 }

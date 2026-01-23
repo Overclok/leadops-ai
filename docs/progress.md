@@ -31,10 +31,10 @@ Legenda: ✅ done | 🟡 pending | ❓ unknown | ⛔ blocked
   - Evidenze: API reachable (200 OK), JSON verified.
 - ❓ **RN1 MCP enabled (optional)**
   - Evidenze: Check pending.
-- ❓ **RN2 Service account created (recommended)**
-  - Evidenze: Check pending.
-- ❓ **RN3 API key stored in secret manager (not in repo)**
-  - Evidenze: Check pending.
+- 🟡 **RN2 Service account created (recommended)**
+  - Evidenze: Instructions in `infra/n8n/README.md`. Pending user action/verification.
+- 🟡 **RN3 API key stored in secret manager (not in repo)**
+  - Evidenze: Instructions in `infra/n8n/README.md`. Pending user action/verification.
 - ✅ **RN4 n8n sync tool exists**
   - Evidenze: `infra/n8n/scripts/n8n-sync.mjs` created & documented.
 
@@ -42,8 +42,8 @@ Legenda: ✅ done | 🟡 pending | ❓ unknown | ⛔ blocked
 ---
 
 ## Prossimo step (1 solo)
-**G6 — Import n8n workflows**
-(Gmail, Vapi/Twilio, Calendly adapters)
+**N02 — Connectivity Test**
+(Verify new keys & service account)
 
 ---
 
@@ -59,3 +59,13 @@ Legenda: ✅ done | 🟡 pending | ❓ unknown | ⛔ blocked
   - Tabelle confermate: `tenants`, `users`, `leads`, `campaigns`, `products_services`, `deals`, `events`, `job_runs`, `error_logs`.
   - RLS abilitato su tutte le tabelle.
 - **Next Prompt**: G6
+
+### Run #19 (N01 Provisioning Docs)
+- **Data**: 2026-01-23 09:22 CET
+- **Auditor**: N8N_AUDITOR (Antigravity)
+- **Risultato**: Setup Documented (Yellow)
+- **Note**:
+  - Aggiornato `infra/n8n/README.md` con istruzioni per Service Account e API Key.
+  - Richiesto salvataggio API Key in Secret Manager (non repo).
+  - Stati RN2/RN3 impostati a Pending in attesa di verifica connettività.
+- **Next Prompt**: N02
