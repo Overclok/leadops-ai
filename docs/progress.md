@@ -26,6 +26,8 @@ Legenda: ✅ done | 🟡 pending | ❓ unknown | ⛔ blocked
   - Evidenze: `npm install` ✅, `npm run build` ✅, `npm run dev` ✅ (Port 3001)
 - ✅ **G5 Auth works (Clerk)**
   - Evidenze: Clerk middleware integrato, Tenant resolution verificata, Build superata.
+- ✅ **G10 Contracts locked (events+enums)**
+  - Evidenze: Updated enums.json, event-schema.json, event-contracts.md, metrics.md, reply-rules.md
 
 ---
 
@@ -48,8 +50,8 @@ Legenda: ✅ done | 🟡 pending | ❓ unknown | ⛔ blocked
 
 ## Prossimo step (1 solo)
 
-**N05 — Credentials & Env**
-(Activate triggers only after credentials and env exist)
+**G6 — Configure Gmail credentials in n8n + run E2E ingest test**
+(Contracts locked, ready for integration)
 
 ---
 
@@ -165,3 +167,14 @@ Legenda: ✅ done | 🟡 pending | ❓ unknown | ⛔ blocked
   - Updated infra/n8n/README.md
   - Corrected legacy 'vergine' status.
 - **Next Prompt**: Execute Activation Runbook (Manual)
+
+### Run #28 (N06 Contracts Locked)
+
+- **Data**: 2026-01-23 19:24 CET
+- **Auditor**: Antigravity
+- **Risultato**: ✅ G10 Done
+- **Note**:
+  - Updated enums.json, event-schema.json
+  - Updated docs/event-contracts.md, docs/metrics.md
+  - Updated reply-rules.md
+- **Next Prompt**: G6

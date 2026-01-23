@@ -170,6 +170,26 @@
         "Loading/empty/error states implemented"
       ],
       "owner_agent": "A8"
+    },
+    {
+      "id": "G10",
+      "name": "Contracts locked (events+enums)",
+      "status": "done",
+      "evidence": [
+        "Updated enums.json",
+        "Updated event-schema.json",
+        "Updated docs/event-contracts.md",
+        "Updated docs/metrics.md",
+        "Updated reply-rules.md"
+      ],
+      "blocking_reason": null,
+      "definition_of_done": [
+        "Enums normalized",
+        "Event schema contains specific requirements",
+        "Event ID generation deterministic",
+        "Gmail reply rules documented"
+      ],
+      "owner_agent": "A7"
     }
   ],
   "remote_gates": [
@@ -467,11 +487,23 @@
         "Updated infra/n8n/README.md"
       ],
       "recommendation": "Execute Activation Runbook"
+    },
+    {
+      "date": "2026-01-23T19:24:40+01:00",
+      "action": "N06 Executed (Contracts Locked)",
+      "changes": [
+        "Updated enums.json",
+        "Updated event-schema.json",
+        "Updated docs/event-contracts.md",
+        "Updated reply-rules.md",
+        "Updated docs/metrics.md"
+      ],
+      "recommendation": "G6 (Configure Gmail & E2E Test)"
     }
   ],
   "next_step": {
-    "recommended_prompt_id": "User_Manual_Action",
-    "reason": "User must now create credentials in n8n UI and set env vars as per newly created docs.",
+    "recommended_prompt_id": "G6",
+    "reason": "Contracts and schemas are locked. Ready to configure credentials and test.",
     "blocked_by": []
   }
 }

@@ -33,6 +33,62 @@
     "LOST",
     "DORMANT"
   ],
+  "product_id": [
+    "AI_RECEPTIONIST",
+    "AI_SDR_INBOUND",
+    "AI_RECEPTIONIST_SDR_BUNDLE"
+  ],
+  "job_status": [
+    "PENDING",
+    "RUNNING",
+    "COMPLETED",
+    "FAILED",
+    "CANCELLED"
+  ],
+  "draft_status": [
+    "CREATED",
+    "GENERATED",
+    "APPROVED",
+    "REJECTED"
+  ],
+  "send_status": [
+    "QUEUED",
+    "SENT",
+    "DELIVERED",
+    "FAILED",
+    "BOUNCED"
+  ],
+  "reply_type": [
+    "HUMAN_REPLY",
+    "AUTO_REPLY",
+    "OOTO"
+  ],
+  "campaign_status": [
+    "DRAFT",
+    "ACTIVE",
+    "PAUSED",
+    "COMPLETED",
+    "ARCHIVED"
+  ],
+  "stop_reason": [
+    "MANUAL",
+    "REPLY_RECEIVED",
+    "BOUNCED",
+    "GOAL_MET",
+    "EXPIRED"
+  ],
+  "followup_policy": [
+    "STRICT",
+    "LENIENT",
+    "SMART"
+  ],
+  "thread_stage": [
+    "INITIAL",
+    "FOLLOWUP_1",
+    "FOLLOWUP_2",
+    "FOLLOWUP_3",
+    "CLOSING"
+  ],
   "source": [
     "n8n",
     "manual",

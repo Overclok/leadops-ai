@@ -4,12 +4,11 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "tenant_id",
-    "occurred_at",
+    "schema_version",
+    "event_id",
     "event_type",
-    "source",
-    "idempotency_key",
-    "payload"
+    "occurred_at",
+    "tenant_id"
   ],
   "properties": {
     "schema_version": {
@@ -19,6 +18,12 @@
     "tenant_id": {
       "type": "string",
       "format": "uuid"
+    },
+    "event_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "description": "Deterministic ID (e.g. evt_gmail_sent_<msgId>)"
     },
     "occurred_at": {
       "type": "string",
@@ -63,51 +68,26 @@
         "system"
       ]
     },
-    "idempotency_key": {
+    "provider": {
       "type": "string",
-      "minLength": 1,
-      "maxLength": 256
+      "description": "e.g. gmail, sendgrid, vapi, twilio"
+    },
+    "provider_message_id": {
+      "type": "string"
+    },
+    "provider_thread_id": {
+      "type": "string"
     },
     "lead": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "match"
-      ],
       "properties": {
-        "match": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "email": {
-              "type": "string",
-              "format": "email"
-            },
-            "phone": {
-              "type": "string"
-            },
-            "external_id": {
-              "type": "string",
-              "maxLength": 128
-            }
-          },
-          "anyOf": [
-            {
-              "required": [
-                "email"
-              ]
-            },
-            {
-              "required": [
-                "phone"
-              ]
-            },
-            {
-              "required": [
-                "external_id"
-              ]
-            }
-          ]
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "phone": {
+          "type": "string"
         },
         "name": {
           "type": "string",
@@ -117,19 +97,26 @@
           "type": "string",
           "maxLength": 160
         }
-      }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "email"
+          ]
+        },
+        {
+          "required": [
+            "phone"
+          ]
+        }
+      ]
     },
     "campaign_id": {
       "type": "string",
       "format": "uuid"
     },
-    "product_service_id": {
-      "type": "string",
-      "format": "uuid"
-    },
-    "agent_id": {
-      "type": "string",
-      "maxLength": 128
+    "product_id": {
+      "type": "string"
     },
     "channel": {
       "type": "string",
